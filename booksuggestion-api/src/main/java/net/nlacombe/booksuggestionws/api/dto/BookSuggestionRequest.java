@@ -4,7 +4,18 @@ import java.util.List;
 
 public class BookSuggestionRequest
 {
+	private PageRequest pageRequest;
 	private List<BookPreferenceCriterion> orderedPreferenceCriteria;
+
+	public PageRequest getPageRequest()
+	{
+		return pageRequest;
+	}
+
+	public void setPageRequest(PageRequest pageRequest)
+	{
+		this.pageRequest = pageRequest;
+	}
 
 	public List<BookPreferenceCriterion> getOrderedPreferenceCriteria()
 	{

@@ -8,6 +8,10 @@ public class Book
 	private int yearOfPublication;
 	private float rating;
 
+	public Book()
+	{
+	}
+
 	public Book(String author, String genre, int numberOfPages, int yearOfPublication, float rating)
 	{
 		this.author = author;
