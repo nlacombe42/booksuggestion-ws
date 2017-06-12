@@ -6,10 +6,14 @@ import net.nlacombe.booksuggestionws.api.dto.PublicationEra;
 import net.nlacombe.booksuggestionws.constants.ElasticSearchConstants;
 import net.nlacombe.booksuggestionws.data.elasticsearch.BookElasticSearch;
 import net.nlacombe.booksuggestionws.service.BookService;
-import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeQueryBuilder;
+import org.elasticsearch.index.query.functionscore.FunctionScoreQueryBuilder;
+import org.elasticsearch.index.query.functionscore.ScoreFunctionBuilder;
+import org.elasticsearch.index.query.functionscore.ScoreFunctionBuilders;
+import org.elasticsearch.index.query.functionscore.fieldvaluefactor.FieldValueFactorFunctionBuilder;
+import org.elasticsearch.index.query.functionscore.weight.WeightBuilder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
@@ -49,26 +53,63 @@ public class BookServiceImpl implements BookService
 
 	private QueryBuilder getBoostingQuery(List<BookPreferenceCriterion> orderedPreferenceCriteria)
 	{
-		int numberOfCriteria = orderedPreferenceCriteria.size();
+		FunctionScoreQueryBuilder scoreQuery = null;
 
-		BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
+		scoreQuery = addPreferenceCriteriaScoreFunctions(scoreQuery, orderedPreferenceCriteria);
+		scoreQuery = addRatingScoringFunction(scoreQuery);
+
+		return scoreQuery;
+	}
+
+	private FunctionScoreQueryBuilder addPreferenceCriteriaScoreFunctions(FunctionScoreQueryBuilder scoreQuery, List<BookPreferenceCriterion> orderedPreferenceCriteria)
+	{
+		int numberOfCriteria = orderedPreferenceCriteria.size();
 
 		for (int criteriaIndex = 0; criteriaIndex < numberOfCriteria; criteriaIndex++)
 		{
 			BookPreferenceCriterion preferenceCriterion = orderedPreferenceCriteria.get(criteriaIndex);
-			BookSearchField field = preferenceCriterion.getField();
-			float rankingFactor = (float) Math.pow(2, numberOfCriteria - criteriaIndex);
-
-			if (BookSearchField.PUBLICATION_ERA.equals(field))
-				boolQuery = getBoostQueryByEra(boolQuery, PublicationEra.valueOf(preferenceCriterion.getValue()), rankingFactor);
-			else
-				boolQuery = getBoostQueryByExactText(boolQuery, field.getFieldName(), preferenceCriterion.getValue(), rankingFactor);
+			scoreQuery = addPreferenceCriterionScoreFunction(scoreQuery, numberOfCriteria, preferenceCriterion, criteriaIndex);
 		}
 
-		return boolQuery;
+		return scoreQuery;
 	}
 
-	private BoolQueryBuilder getBoostQueryByEra(BoolQueryBuilder boolQuery, PublicationEra publicationEra, float rankingFactor)
+	private FunctionScoreQueryBuilder addPreferenceCriterionScoreFunction(FunctionScoreQueryBuilder scoreQuery, int numberOfCriteria, BookPreferenceCriterion preferenceCriterion, int criteriaIndex)
+	{
+		QueryBuilder criterionQuery = getCriterionQuery(preferenceCriterion);
+		float rankingFactor = (float) Math.pow(2, (numberOfCriteria - criteriaIndex) + 2);
+
+		WeightBuilder scoreFunction = ScoreFunctionBuilders.weightFactorFunction(rankingFactor);
+
+		return addScoreQuery(scoreQuery, criterionQuery, scoreFunction);
+	}
+
+	private FunctionScoreQueryBuilder addRatingScoringFunction(FunctionScoreQueryBuilder scoreQuery)
+	{
+		FieldValueFactorFunctionBuilder ratingScoreFunction = ScoreFunctionBuilders.fieldValueFactorFunction(BookSearchField.RATING.getFieldName());
+
+		return addScoreQuery(scoreQuery, QueryBuilders.matchAllQuery(), ratingScoreFunction);
+	}
+
+	private FunctionScoreQueryBuilder addScoreQuery(FunctionScoreQueryBuilder scoreQuery, QueryBuilder criterionQuery, ScoreFunctionBuilder scoreFunction)
+	{
+		if (scoreQuery == null)
+			return QueryBuilders.functionScoreQuery(criterionQuery, scoreFunction);
+		else
+			return scoreQuery.add(criterionQuery, scoreFunction);
+	}
+
+	private QueryBuilder getCriterionQuery(BookPreferenceCriterion preferenceCriterion)
+	{
+		BookSearchField field = preferenceCriterion.getField();
+
+		if (BookSearchField.PUBLICATION_ERA.equals(field))
+			return getBoostQueryByEra(PublicationEra.valueOf(preferenceCriterion.getValue()));
+		else
+			return getBoostQueryByExactText(field.getFieldName(), preferenceCriterion.getValue());
+	}
+
+	private QueryBuilder getBoostQueryByEra(PublicationEra publicationEra)
 	{
 		RangeQueryBuilder rangeQuery = QueryBuilders.rangeQuery(BookSearchField.PUBLICATION_ERA.getFieldName());
 
@@ -77,11 +118,11 @@ public class BookServiceImpl implements BookService
 		else
 			rangeQuery = rangeQuery.lt(PublicationEra.MODERN.getStartYear());
 
-		return boolQuery.should(rangeQuery.boost(rankingFactor));
+		return rangeQuery;
 	}
 
-	private BoolQueryBuilder getBoostQueryByExactText(BoolQueryBuilder boolQuery, String fieldName, String value, float rankingFactor)
+	private QueryBuilder getBoostQueryByExactText(String fieldName, String value)
 	{
-		return boolQuery.should(QueryBuilders.matchQuery(fieldName, value).boost(rankingFactor));
+		return QueryBuilders.matchQuery(fieldName, value);
 	}
 }
