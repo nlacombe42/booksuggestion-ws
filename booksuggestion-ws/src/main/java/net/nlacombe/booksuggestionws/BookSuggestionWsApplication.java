@@ -25,7 +25,7 @@ public class BookSuggestionWsApplication implements CommandLineRunner
 	@Override
 	public void run(String... strings) throws Exception
 	{
-		List<BookElasticSearch> books = generateBooks(3);
+		List<BookElasticSearch> books = generateBooks(10000);
 
 		bookElasticSearchRepository.save(books);
 	}
