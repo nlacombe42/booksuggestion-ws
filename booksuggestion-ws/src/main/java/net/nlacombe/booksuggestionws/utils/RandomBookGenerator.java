@@ -29,7 +29,7 @@ public class RandomBookGenerator
 		book.setAuthor(getRandomElement(random, AUTHORS));
 		book.setGenre(getRandomElement(random, GENRES));
 		book.setNumberOfPages(random.nextInt(1, 2000 + 1));
-		book.setYearOfPublication(random.nextInt(1930, 2017 + 1));
+		book.setYearOfPublication(random.nextInt(1000, 2017 + 1));
 		book.setRating(random.nextInt(1, 10) / 2f);
 
 		return book;

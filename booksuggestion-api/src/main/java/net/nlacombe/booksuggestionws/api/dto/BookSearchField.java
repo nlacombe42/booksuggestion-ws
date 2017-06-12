@@ -5,7 +5,7 @@ public enum BookSearchField
 	AUTHOR("author"),
 	GENRE("genre"),
 	NUMBER_OF_PAGES("numberOfPages"),
-	PUBLICATION_AGE("yearOfPublication");
+	PUBLICATION_ERA("yearOfPublication");
 
 	private String fieldName;
 
