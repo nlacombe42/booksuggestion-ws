@@ -35,14 +35,33 @@ public class BookServiceImpl implements BookService
 	}
 
 	@Override
-	public void create(Book book)
+	public Book create(Book book)
 	{
-		bookElasticSearchService.save(bookMapper.toBookElasticSearch(book));
+		return reindexInElasticSearch(book);
+	}
+
+	@Override
+	public Book updateBook(Book book)
+	{
+		return reindexInElasticSearch(book);
+	}
+
+	@Override
+	public void deleteBook(int bookId)
+	{
+		bookElasticSearchService.deleteBook(bookId);
 	}
 
 	@Override
 	public void deleteAllBooks()
 	{
 		bookElasticSearchService.deleteAllBooks();
+	}
+
+	private Book reindexInElasticSearch(Book book)
+	{
+		BookElasticSearch bookElasticSearch = bookMapper.toBookElasticSearch(book);
+
+		return bookMapper.toBook(bookElasticSearchService.save(bookElasticSearch));
 	}
 }

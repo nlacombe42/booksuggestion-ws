@@ -2,6 +2,7 @@ package net.nlacombe.booksuggestionws.api.dto;
 
 public class Book
 {
+	private int bookId;
 	private String author;
 	private String genre;
 	private int numberOfPages;
@@ -12,8 +13,9 @@ public class Book
 	{
 	}
 
-	public Book(String author, String genre, int numberOfPages, int yearOfPublication, float rating)
+	public Book(int bookId, String author, String genre, int numberOfPages, int yearOfPublication, float rating)
 	{
+		this.bookId = bookId;
 		this.author = author;
 		this.genre = genre;
 		this.numberOfPages = numberOfPages;
@@ -29,6 +31,7 @@ public class Book
 
 		Book book = (Book) o;
 
+		if (bookId != book.bookId) return false;
 		if (numberOfPages != book.numberOfPages) return false;
 		if (yearOfPublication != book.yearOfPublication) return false;
 		if (Float.compare(book.rating, rating) != 0) return false;
@@ -39,7 +42,8 @@ public class Book
 	@Override
 	public int hashCode()
 	{
-		int result = author != null ? author.hashCode() : 0;
+		int result = bookId;
+		result = 31 * result + (author != null ? author.hashCode() : 0);
 		result = 31 * result + (genre != null ? genre.hashCode() : 0);
 		result = 31 * result + numberOfPages;
 		result = 31 * result + yearOfPublication;
@@ -51,12 +55,23 @@ public class Book
 	public String toString()
 	{
 		return "Book{" +
-				"author='" + author + '\'' +
+				"bookId=" + bookId +
+				", author='" + author + '\'' +
 				", genre='" + genre + '\'' +
 				", numberOfPages=" + numberOfPages +
 				", yearOfPublication=" + yearOfPublication +
 				", rating=" + rating +
 				'}';
+	}
+
+	public int getBookId()
+	{
+		return bookId;
+	}
+
+	public void setBookId(int bookId)
+	{
+		this.bookId = bookId;
 	}
 
 	public String getAuthor()

@@ -11,7 +11,9 @@ public interface BookElasticSearchService
 {
 	Page<BookElasticSearch> getBookSuggestions(PageRequest pageRequest, List<BookPreferenceCriterion> preferenceCriteria);
 
-	void save(BookElasticSearch book);
+	BookElasticSearch save(BookElasticSearch book);
+
+	void deleteBook(int bookId);
 
 	void deleteAllBooks();
 }

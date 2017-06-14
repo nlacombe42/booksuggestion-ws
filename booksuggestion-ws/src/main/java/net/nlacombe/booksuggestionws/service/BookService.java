@@ -11,7 +11,11 @@ public interface BookService
 {
 	Page<Book> getBookSuggestions(PageRequest pageRequest, List<BookPreferenceCriterion> preferenceCriteria);
 
-	void create(Book book);
+	Book create(Book book);
+
+	Book updateBook(Book book);
+
+	void deleteBook(int bookId);
 
 	void deleteAllBooks();
 }

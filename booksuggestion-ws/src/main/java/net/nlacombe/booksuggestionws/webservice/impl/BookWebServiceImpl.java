@@ -22,4 +22,27 @@ public class BookWebServiceImpl implements BookWebService
 	{
 		return bookService.getBookSuggestions(bookSuggestionRequest.getPageRequest(), bookSuggestionRequest.getOrderedPreferenceCriteria());
 	}
+
+	@Override
+	public Book createBook(Book book)
+	{
+		book.setBookId(0);
+
+		return bookService.create(book);
+	}
+
+	@Override
+	public Book updateBook(int bookId, Book book)
+	{
+		if (book.getBookId() != bookId)
+			throw new IllegalArgumentException("bookId in body not matching bookId in URL");
+
+		return bookService.updateBook(book);
+	}
+
+	@Override
+	public void deleteBook(int bookId)
+	{
+		bookService.deleteBook(bookId);
+	}
 }

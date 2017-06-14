@@ -45,15 +45,21 @@ public class BookElasticSearchServiceImpl implements BookElasticSearchService
 	}
 
 	@Override
-	public void save(BookElasticSearch book)
+	public BookElasticSearch save(BookElasticSearch book)
 	{
-		bookElasticSearchRepository.save(book);
+		return bookElasticSearchRepository.save(book);
 	}
 
 	@Override
 	public void deleteAllBooks()
 	{
 		bookElasticSearchRepository.deleteAll();
+	}
+
+	@Override
+	public void deleteBook(int bookId)
+	{
+		bookElasticSearchRepository.deleteByBookId(bookId);
 	}
 
 	private NativeSearchQuery getSearchQuery(org.springframework.data.domain.PageRequest pageRequest, List<BookPreferenceCriterion> preferenceCriteria)
