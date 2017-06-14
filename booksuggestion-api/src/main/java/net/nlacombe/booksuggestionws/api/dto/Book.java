@@ -21,6 +21,44 @@ public class Book
 		this.rating = rating;
 	}
 
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		Book book = (Book) o;
+
+		if (numberOfPages != book.numberOfPages) return false;
+		if (yearOfPublication != book.yearOfPublication) return false;
+		if (Float.compare(book.rating, rating) != 0) return false;
+		if (author != null ? !author.equals(book.author) : book.author != null) return false;
+		return genre != null ? genre.equals(book.genre) : book.genre == null;
+	}
+
+	@Override
+	public int hashCode()
+	{
+		int result = author != null ? author.hashCode() : 0;
+		result = 31 * result + (genre != null ? genre.hashCode() : 0);
+		result = 31 * result + numberOfPages;
+		result = 31 * result + yearOfPublication;
+		result = 31 * result + (rating != +0.0f ? Float.floatToIntBits(rating) : 0);
+		return result;
+	}
+
+	@Override
+	public String toString()
+	{
+		return "Book{" +
+				"author='" + author + '\'' +
+				", genre='" + genre + '\'' +
+				", numberOfPages=" + numberOfPages +
+				", yearOfPublication=" + yearOfPublication +
+				", rating=" + rating +
+				'}';
+	}
+
 	public String getAuthor()
 	{
 		return author;

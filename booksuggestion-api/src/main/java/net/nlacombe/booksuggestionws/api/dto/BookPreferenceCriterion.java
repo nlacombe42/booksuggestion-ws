@@ -5,6 +5,16 @@ public class BookPreferenceCriterion
 	private BookSearchField field;
 	private String value;
 
+	public BookPreferenceCriterion()
+	{
+	}
+
+	public BookPreferenceCriterion(BookSearchField field, String value)
+	{
+		this.field = field;
+		this.value = value;
+	}
+
 	public BookSearchField getField()
 	{
 		return field;
