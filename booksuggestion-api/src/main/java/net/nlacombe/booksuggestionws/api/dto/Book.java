@@ -13,9 +13,8 @@ public class Book
 	{
 	}
 
-	public Book(int bookId, String author, String genre, int numberOfPages, int yearOfPublication, float rating)
+	public Book(String author, String genre, int numberOfPages, int yearOfPublication, float rating)
 	{
-		this.bookId = bookId;
 		this.author = author;
 		this.genre = genre;
 		this.numberOfPages = numberOfPages;

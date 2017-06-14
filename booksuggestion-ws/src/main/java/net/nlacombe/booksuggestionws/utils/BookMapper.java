@@ -4,6 +4,7 @@ import net.nlacombe.booksuggestionws.api.dto.Book;
 import net.nlacombe.booksuggestionws.api.dto.Page;
 import net.nlacombe.booksuggestionws.api.dto.PageRequest;
 import net.nlacombe.booksuggestionws.data.elasticsearch.BookElasticSearch;
+import net.nlacombe.booksuggestionws.data.entity.BookEntity;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
@@ -28,6 +29,24 @@ public class BookMapper
 		Book book = new Book();
 
 		BeanUtils.copyProperties(elasticSearchBook, book);
+
+		return book;
+	}
+
+	public BookEntity toBookEntity(Book book)
+	{
+		BookEntity bookEntity = new BookEntity();
+
+		BeanUtils.copyProperties(book, bookEntity);
+
+		return bookEntity;
+	}
+
+	public Book toBook(BookEntity bookEntity)
+	{
+		Book book = new Book();
+
+		BeanUtils.copyProperties(bookEntity, book);
 
 		return book;
 	}

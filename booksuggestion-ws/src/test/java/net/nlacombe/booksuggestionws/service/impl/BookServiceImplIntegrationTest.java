@@ -35,20 +35,20 @@ public class BookServiceImplIntegrationTest
 	@Test
 	public void ranks_by_author_then_genre_then_rating_given_preference_of_author_then_genre()
 	{
-		Book isaacSciFiRate4 = new Book(1, ISAAC_ASIMOV, SCI_FI, 100, 1951, 4);
-		Book isaacSciFiRate3 = new Book(2, ISAAC_ASIMOV, SCI_FI, 100, 1951, 3);
-		Book isaacThriller = new Book(3, ISAAC_ASIMOV, THRILLER, 100, 1951, 5);
-		Book clarkeSciFi = new Book(4, ARTHUR_C_CLARKE, SCI_FI, 100, 1951, 2);
+		Book isaacSciFiRate4 = new Book(ISAAC_ASIMOV, SCI_FI, 100, 1951, 4);
+		Book isaacSciFiRate3 = new Book(ISAAC_ASIMOV, SCI_FI, 100, 1951, 3);
+		Book isaacThriller = new Book(ISAAC_ASIMOV, THRILLER, 100, 1951, 5);
+		Book clarkeSciFi = new Book(ARTHUR_C_CLARKE, SCI_FI, 100, 1951, 2);
 		BookPreferenceCriterion authorPreference = new BookPreferenceCriterion(BookSearchField.AUTHOR, "Isaac");
 		BookPreferenceCriterion genrePreference = new BookPreferenceCriterion(BookSearchField.GENRE, "Sci-Fi");
 		List<BookPreferenceCriterion> orderedPreferenceCriteria = Arrays.asList(authorPreference, genrePreference);
 		PageRequest pageRequest = new PageRequest(0, 5);
 
 		bookService.deleteAllBooks();
-		bookService.create(isaacSciFiRate4);
-		bookService.create(isaacSciFiRate3);
-		bookService.create(isaacThriller);
-		bookService.create(clarkeSciFi);
+		isaacSciFiRate4 = bookService.create(isaacSciFiRate4);
+		isaacSciFiRate3 = bookService.create(isaacSciFiRate3);
+		isaacThriller = bookService.create(isaacThriller);
+		clarkeSciFi = bookService.create(clarkeSciFi);
 		Page<Book> bookPage = bookService.getBookSuggestions(pageRequest, orderedPreferenceCriteria);
 
 		assertThat(bookPage).isNotNull();
@@ -58,15 +58,15 @@ public class BookServiceImplIntegrationTest
 	@Test
 	public void ranks_by_modern_era()
 	{
-		Book modernBook = new Book(1, ISAAC_ASIMOV, SCI_FI, 100, 1951, 4);
-		Book classicBook = new Book(2, ISAAC_ASIMOV, SCI_FI, 100, 1100, 3);
+		Book modernBook = new Book(ISAAC_ASIMOV, SCI_FI, 100, 1951, 4);
+		Book classicBook = new Book(ISAAC_ASIMOV, SCI_FI, 100, 1100, 3);
 		BookPreferenceCriterion eraPreference = new BookPreferenceCriterion(BookSearchField.PUBLICATION_ERA, PublicationEra.MODERN.name());
 		List<BookPreferenceCriterion> orderedPreferenceCriteria = Collections.singletonList(eraPreference);
 		PageRequest pageRequest = new PageRequest(0, 5);
 
 		bookService.deleteAllBooks();
-		bookService.create(modernBook);
-		bookService.create(classicBook);
+		modernBook = bookService.create(modernBook);
+		classicBook = bookService.create(classicBook);
 		Page<Book> bookPage = bookService.getBookSuggestions(pageRequest, orderedPreferenceCriteria);
 
 		assertThat(bookPage).isNotNull();
@@ -76,15 +76,15 @@ public class BookServiceImplIntegrationTest
 	@Test
 	public void ranks_by_classic_era()
 	{
-		Book modernBook = new Book(1, ISAAC_ASIMOV, SCI_FI, 100, 1951, 4);
-		Book classicBook = new Book(2, ISAAC_ASIMOV, SCI_FI, 100, 1100, 3);
+		Book modernBook = new Book(ISAAC_ASIMOV, SCI_FI, 100, 1951, 4);
+		Book classicBook = new Book(ISAAC_ASIMOV, SCI_FI, 100, 1100, 3);
 		BookPreferenceCriterion eraPreference = new BookPreferenceCriterion(BookSearchField.PUBLICATION_ERA, PublicationEra.CLASSIC.name());
 		List<BookPreferenceCriterion> orderedPreferenceCriteria = Collections.singletonList(eraPreference);
 		PageRequest pageRequest = new PageRequest(0, 5);
 
 		bookService.deleteAllBooks();
-		bookService.create(modernBook);
-		bookService.create(classicBook);
+		modernBook = bookService.create(modernBook);
+		classicBook = bookService.create(classicBook);
 		Page<Book> bookPage = bookService.getBookSuggestions(pageRequest, orderedPreferenceCriteria);
 
 		assertThat(bookPage).isNotNull();

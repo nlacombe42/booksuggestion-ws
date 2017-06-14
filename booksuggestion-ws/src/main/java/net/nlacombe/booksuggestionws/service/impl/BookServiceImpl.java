@@ -5,6 +5,8 @@ import net.nlacombe.booksuggestionws.api.dto.BookPreferenceCriterion;
 import net.nlacombe.booksuggestionws.api.dto.Page;
 import net.nlacombe.booksuggestionws.api.dto.PageRequest;
 import net.nlacombe.booksuggestionws.data.elasticsearch.BookElasticSearch;
+import net.nlacombe.booksuggestionws.data.entity.BookEntity;
+import net.nlacombe.booksuggestionws.repository.jpa.BookRepository;
 import net.nlacombe.booksuggestionws.service.BookElasticSearchService;
 import net.nlacombe.booksuggestionws.service.BookService;
 import net.nlacombe.booksuggestionws.utils.BookMapper;
@@ -18,6 +20,9 @@ import java.util.List;
 @Transactional
 public class BookServiceImpl implements BookService
 {
+	@Inject
+	private BookRepository bookRepository;
+
 	@Inject
 	private BookElasticSearchService bookElasticSearchService;
 
@@ -37,25 +42,36 @@ public class BookServiceImpl implements BookService
 	@Override
 	public Book create(Book book)
 	{
-		return reindexInElasticSearch(book);
+		return saveAndReindex(book);
 	}
 
 	@Override
 	public Book updateBook(Book book)
 	{
-		return reindexInElasticSearch(book);
+		return saveAndReindex(book);
 	}
 
 	@Override
 	public void deleteBook(int bookId)
 	{
+		bookRepository.delete(bookId);
 		bookElasticSearchService.deleteBook(bookId);
 	}
 
 	@Override
 	public void deleteAllBooks()
 	{
+		bookRepository.deleteAll();
 		bookElasticSearchService.deleteAllBooks();
+	}
+
+	private Book saveAndReindex(Book book)
+	{
+		book = saveBook(book);
+
+		reindexInElasticSearch(book);
+
+		return book;
 	}
 
 	private Book reindexInElasticSearch(Book book)
@@ -63,5 +79,13 @@ public class BookServiceImpl implements BookService
 		BookElasticSearch bookElasticSearch = bookMapper.toBookElasticSearch(book);
 
 		return bookMapper.toBook(bookElasticSearchService.save(bookElasticSearch));
+	}
+
+	private Book saveBook(Book book)
+	{
+		BookEntity bookEntity = bookMapper.toBookEntity(book);
+		bookEntity = bookRepository.save(bookEntity);
+		book = bookMapper.toBook(bookEntity);
+		return book;
 	}
 }

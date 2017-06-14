@@ -1,5 +1,6 @@
 package net.nlacombe.booksuggestionws.service.impl;
 
+import net.nlacombe.booksuggestionws.repository.jpa.BookRepository;
 import net.nlacombe.booksuggestionws.service.BookElasticSearchService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,13 +17,17 @@ public class BookServiceImplTest
 	private BookServiceImpl bookService;
 
 	@Mock
+	private BookRepository bookRepository;
+
+	@Mock
 	private BookElasticSearchService bookElasticSearchService;
 
 	@Test
-	public void delete_all_calls_elastic_search_service()
+	public void delete_all_deletes_in_db_and_elastic_search()
 	{
 		bookService.deleteAllBooks();
 
+		verify(bookRepository).deleteAll();
 		verify(bookElasticSearchService).deleteAllBooks();
 	}
 }
