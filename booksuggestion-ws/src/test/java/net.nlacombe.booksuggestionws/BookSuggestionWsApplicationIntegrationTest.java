@@ -10,7 +10,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class BookSuggestionWsApplicationIntegrationTest
 {
 	@Test
-	public void applicationContextLoads()
+	public void application_context_loads()
 	{
 	}
 }
